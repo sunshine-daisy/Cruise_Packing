@@ -4,6 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Cruise Packing — Carnival Celebration · SJ63G1</title>
+<link rel="icon" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="%230b5d70"/><stop offset="1" stop-color="%230f7e93"/></linearGradient></defs><rect width="64" height="64" rx="14" fill="url(%23g)"/><circle cx="32" cy="15" r="5" fill="none" stroke="white" stroke-width="4.5"/><line x1="32" y1="20" x2="32" y2="48" stroke="white" stroke-width="4.5" stroke-linecap="round"/><line x1="21" y1="28" x2="43" y2="28" stroke="white" stroke-width="4.5" stroke-linecap="round"/><path d="M13 36 A19 17 0 0 0 51 36" fill="none" stroke="white" stroke-width="4.5" stroke-linecap="round"/></svg>'>
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="theme-color" content="#0b5d70">
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
@@ -269,10 +272,12 @@ function toast(msg){ const t=$("toast"); t.textContent=msg; t.classList.add("sho
 function esc(s){ return String(s).replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
 function items(c){ return c.items || (c.items=[]); }
 function people(){ return (meta||DEFAULT_META).people; }
+function extras(){ return (meta||DEFAULT_META).extras || []; }
+function extra(id){ return extras().find(x=>x.id===id) || null; }
 function person(id){ return people().find(p=>p.id===id) || null; }
-function isGroup(id){ return !!GROUPS[id]; }
-function nameOf(id){ return isGroup(id) ? GROUPS[id] : (person(id)?person(id).name:id); }
-function listIds(){ return ["shared", ...people().map(p=>p.id), "shore","home"]; }
+function isGroup(id){ return !!GROUPS[id] || !!extra(id); }
+function nameOf(id){ if(GROUPS[id]) return GROUPS[id]; const x=extra(id); if(x) return x.name; return person(id)?person(id).name:id; }
+function listIds(){ return ["shared", ...people().map(p=>p.id), ...extras().map(x=>x.id), "shore","home"]; }
 function me(){ return person(profile); }
 function canEdit(listId){
   const m = me(); if(!m) return false;
@@ -336,7 +341,7 @@ function watchList(id){
       }
       data[id]=v;
     }else{
-      const seedCats = SEED[id] ? SEED[id] : PERSON_TEMPLATE();
+      const seedCats = SEED[id] ? SEED[id] : (extra(id) ? [{n:"Items", items:[]}] : PERSON_TEMPLATE());
       db.ref("packing/"+id).transaction(curVal=>{
         if(curVal===null) return {cats:seedCats, by:"", at:Date.now()};
       });
@@ -406,8 +411,8 @@ function renderChrome(){
   listIds().forEach(id=>{
     const b=document.createElement("button");
     b.className="tab"+(id===cur?" on":"");
-    const p=person(id);
-    if(p){ b.style.background=p.soft; b.style.color=p.color; }
+    const p=person(id)||extra(id);
+    if(p && p.color){ b.style.background=p.soft; b.style.color=p.color; }
     const k=counts(id);
     b.innerHTML = esc(nameOf(id)) + '<span class="pct">'+k.pct+'%</span>';
     b.onclick=()=>{ cur=id; renderChrome(); render(); };
@@ -415,9 +420,9 @@ function renderChrome(){
   });
 }
 function render(){
-  const p=person(cur);
-  document.body.style.setProperty("--accent", p?p.color:"#0f7e93");
-  document.body.style.setProperty("--accent-soft", p?p.soft:"#d8ecef");
+  const p=person(cur)||extra(cur);
+  document.body.style.setProperty("--accent", (p&&p.color)?p.color:"#0f7e93");
+  document.body.style.setProperty("--accent-soft", (p&&p.soft)?p.soft:"#d8ecef");
   const main=$("main"); const list=data[cur];
   if(!list){ main.innerHTML='<div class="loading">Loading&hellip;</div>'; return; }
   const editable = canEdit(cur);
@@ -584,6 +589,19 @@ function renderSettings(){
   });
   h+='<div class="addPerson"><input type="text" id="npName" placeholder="New traveler\u2019s name">'
     +'<button onclick="addPerson()">+ Add</button></div>';
+  h+='<h3>Extra lists</h3>';
+  if(!draft.extras) draft.extras=[];
+  draft.extras.forEach((x,i)=>{
+    h+='<div class="pRow">'
+      +'<span class="dot" style="background:'+esc(x.color)+'"></span>'
+      +'<input type="text" value="'+esc(x.name)+'" onchange="draft.extras['+i+'].name=this.value">'
+      +'<select onchange="setExtraColor('+i+',this.value)">'+colorOptions(x.color)+'</select>'
+      +'<button class="iconBtn del" title="Remove list" onclick="removeExtra('+i+')">&times;</button>'
+      +'</div>';
+  });
+  h+='<div class="addPerson"><input type="text" id="nxName" placeholder="New list (e.g. For Dad)">'
+    +'<button onclick="addExtra()">+ Add</button></div>';
+  h+='<p style="text-align:left;font-size:11.5px;margin-top:4px">Extra lists are group tabs \u2014 not tied to a traveler. Organizers and Helpers can update them; everyone can see them.</p>';
   h+='<p style="text-align:left;font-size:11.5px;margin-top:8px">A new traveler gets a fresh copy of the standard individual list and shows up as a tab on everyone\u2019s phone. Removing a traveler deletes their tab and their list data.</p>';
   h+='<div class="setBtns"><button class="cancel" onclick="closeSettings()">Cancel</button>'
     +'<button class="save" onclick="saveSettings()">Save changes</button></div>';
@@ -600,6 +618,23 @@ function addPerson(){
   draft.people.push({id:id, name:v, role:"own", color:free.c, soft:free.s});
   inp.value=""; renderSettings();
 }
+function setExtraColor(i,v){ const [c,s]=v.split("|"); draft.extras[i].color=c; draft.extras[i].soft=s; renderSettings(); }
+function addExtra(){
+  const inp=$("nxName"); const v=(inp.value||"").trim(); if(!v) return;
+  if(!draft.extras) draft.extras=[];
+  if(draft.extras.some(x=>x.name.toLowerCase()===v.toLowerCase())){ toast("That list already exists"); return; }
+  const used=draft.people.map(p=>p.color).concat(draft.extras.map(x=>x.color));
+  const free=COLORS.find(c=>!used.includes(c.c))||COLORS[1];
+  const id="x_"+v.toLowerCase().replace(/[^a-z0-9]/g,"").slice(0,12)+"_"+Date.now().toString(36);
+  draft.extras.push({id:id, name:v, color:free.c, soft:free.s});
+  inp.value=""; renderSettings();
+}
+function removeExtra(i){
+  const x=draft.extras[i];
+  if(!x._armDel){ x._armDel=true; toast('Tap \u00d7 again to remove "'+x.name+'" and its items');
+    setTimeout(()=>{delete x._armDel;},2500); return; }
+  draft.extras.splice(i,1); renderSettings();
+}
 function removePerson(i){
   const p=draft.people[i];
   if(p.id===profile){ toast("You can't remove yourself"); return; }
@@ -615,7 +650,8 @@ function saveSettings(){
   draft.trip.title=$("tTitle").value.trim()||"Packing Lists";
   draft.trip.sub=$("tSub").value.trim();
   if(!draft.people.some(x=>x.role==="organizer")){ toast("The trip needs at least one organizer"); return; }
-  const removed = people().filter(p=>!draft.people.some(d=>d.id===p.id));
+  const removed = people().filter(p=>!draft.people.some(d=>d.id===p.id))
+    .concat(extras().filter(x=>!(draft.extras||[]).some(d=>d.id===x.id)));
   const clean = JSON.parse(JSON.stringify(draft, (k,v)=> (typeof k==="string" && k.startsWith("_")) ? undefined : v));
   meta = clean;
   settingsOpen=false; $("settings").style.display="none"; draft=null;
