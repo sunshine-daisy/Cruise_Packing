@@ -13,14 +13,8 @@
     --ink:#13252b; --muted:#6e8086; --line:#e7ddc9; --coral:#e2674a; --coral-soft:#fbe2da;
     --ok:#1f9e84; --gold:#d2972f; --card:#ffffff;
     --accent:#0f7e93; --accent-soft:#d8ecef;
-    --lilian:#6d8b64; --lilian-soft:#dde8d9;
-    --isa:#c29a2e;    --isa-soft:#fdf3cf;
-    --camila:#c85d85; --camila-soft:#fbdce6;
     --shadow:0 1px 2px rgba(13,40,46,.05),0 3px 10px rgba(13,40,46,.06);
   }
-  body[data-list="lilian"]{--accent:var(--lilian);--accent-soft:var(--lilian-soft)}
-  body[data-list="isa"]{--accent:var(--isa);--accent-soft:var(--isa-soft)}
-  body[data-list="camila"]{--accent:var(--camila);--accent-soft:var(--camila-soft)}
   *{box-sizing:border-box}
   html,body{margin:0;padding:0}
   body{background:var(--paper);color:var(--ink);
@@ -31,7 +25,7 @@
   .eyebrow{font-size:11px;letter-spacing:.18em;text-transform:uppercase;opacity:.85}
   h1{margin:1px 0 1px;font-size:18px;font-weight:800;letter-spacing:.01em}
   .sub{font-size:12px;opacity:.85;margin-bottom:6px}
-  .whoRow{display:flex;align-items:center;gap:8px;font-size:12px;margin-bottom:6px}
+  .whoRow{display:flex;align-items:center;gap:8px;font-size:12px;margin-bottom:6px;flex-wrap:wrap}
   .whoRow b{font-weight:700}
   .whoRow button{background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.35);
     color:#fff;border-radius:99px;padding:3px 12px;font-size:12px;cursor:pointer}
@@ -42,10 +36,7 @@
     font-weight:700;cursor:pointer;opacity:.72;transform:translateY(3px);transition:.15s}
   .tab::before{content:"";position:absolute;left:7px;top:50%;width:8px;height:8px;
     border-radius:50%;transform:translateY(-50%);
-    background:var(--paper);box-shadow:inset 0 0 0 2px var(--sea)}
-  .tab[data-id="lilian"]{background:var(--lilian-soft);color:#48603f}
-  .tab[data-id="isa"]{background:var(--isa-soft);color:#7d6014}
-  .tab[data-id="camila"]{background:var(--camila-soft);color:#9c3e66}
+    background:var(--paper);box-shadow:inset 0 0 0 2px currentColor}
   .tab.on{opacity:1;transform:none;box-shadow:var(--shadow)}
   .tab .pct{font-weight:600;font-size:11px;opacity:.75;margin-left:5px}
   main{max-width:760px;margin:0 auto;padding:10px 10px 74px}
@@ -89,24 +80,38 @@
   footer button.warn{color:#c05a49}
   .toast{position:fixed;left:50%;bottom:56px;transform:translateX(-50%);
     background:var(--ink);color:#fff;font-size:13px;border-radius:99px;
-    padding:8px 16px;opacity:0;pointer-events:none;transition:opacity .25s;z-index:50}
+    padding:8px 16px;opacity:0;pointer-events:none;transition:opacity .25s;z-index:200}
   .toast.show{opacity:.94}
   .overlay{position:fixed;inset:0;background:rgba(11,53,64,.72);display:flex;
-    align-items:center;justify-content:center;z-index:100;padding:20px}
-  .overlay .box{background:var(--paper);border-radius:16px;padding:22px 20px;max-width:360px;width:100%;
-    text-align:center;box-shadow:0 10px 40px rgba(0,0,0,.3)}
-  .overlay h2{margin:0 0 4px;color:var(--sea);font-size:18px}
-  .overlay p{font-size:13px;color:var(--muted);margin:0 0 14px}
+    align-items:center;justify-content:center;z-index:100;padding:16px;overflow:auto}
+  .overlay .box{background:var(--paper);border-radius:16px;padding:20px 18px;max-width:420px;width:100%;
+    box-shadow:0 10px 40px rgba(0,0,0,.3);max-height:92vh;overflow:auto}
+  .overlay h2{margin:0 0 4px;color:var(--sea);font-size:18px;text-align:center}
+  .overlay p{font-size:13px;color:var(--muted);margin:0 0 14px;text-align:center}
   .overlay .who{display:block;width:100%;margin-bottom:8px;background:#fff;border:2px solid var(--line);
     border-radius:12px;padding:11px;font-size:15px;font-weight:700;cursor:pointer}
-  .overlay .who.lilian{color:#48603f;border-color:var(--lilian-soft);background:var(--lilian-soft)}
-  .overlay .who.isa{color:#7d6014;border-color:var(--isa-soft);background:var(--isa-soft)}
-  .overlay .who.camila{color:#9c3e66;border-color:var(--camila-soft);background:var(--camila-soft)}
-  .loading{padding:50px 0;text-align:center;color:var(--muted);font-size:14px}
+  /* settings */
+  .set h3{margin:12px 0 6px;font-size:13px;color:var(--sea);text-transform:uppercase;letter-spacing:.06em}
+  .set label{display:block;font-size:11.5px;color:var(--muted);margin:7px 0 2px}
+  .set input[type=text], .set select{width:100%;border:1px solid var(--line);border-radius:8px;
+    padding:6px 9px;font-size:13.5px;background:#fff}
+  .pRow{display:flex;gap:6px;align-items:center;margin-bottom:6px}
+  .pRow .dot{width:14px;height:14px;border-radius:50%;flex:0 0 auto;border:1px solid rgba(0,0,0,.15)}
+  .pRow input[type=text]{flex:1.2}
+  .pRow select{flex:1}
+  .pRow .iconBtn{font-size:17px}
+  .setBtns{display:flex;gap:8px;justify-content:flex-end;margin-top:14px}
+  .setBtns button{border-radius:99px;padding:7px 16px;font-size:13px;font-weight:700;cursor:pointer}
+  .setBtns .save{background:var(--sea);color:#fff;border:none}
+  .setBtns .cancel{background:#fff;color:var(--muted);border:1px solid var(--line)}
+  .addPerson{display:flex;gap:6px;margin-top:6px}
+  .addPerson button{background:#fff;color:var(--sea);border:1.5px solid var(--sea);
+    border-radius:8px;padding:5px 12px;font-weight:700;font-size:12.5px;cursor:pointer;flex:0 0 auto}
   .pbox{display:none}
   #printHead{display:none}
+  .loading{padding:50px 0;text-align:center;color:var(--muted);font-size:14px}
   @media print{
-    header,.addRow,.addCat,footer,.iconBtn,.banner{display:none!important}
+    header,.addRow,.addCat,footer,.iconBtn,.banner,.overlay{display:none!important}
     body{background:#fff}
     .cat{box-shadow:none;break-inside:avoid}
     main{padding:0;max-width:none}
@@ -121,12 +126,13 @@
 </head>
 <body>
 <header>
-  <div class="eyebrow">&#9875; Carnival Celebration &middot; Jul 24 &ndash; Aug 3, 2026 &middot; SJ63G1</div>
-  <h1>Cruise Packing Lists</h1>
-  <div class="sub">Shared list + one per traveler &middot; live-synced for everyone</div>
+  <div class="eyebrow" id="hEyebrow">&#9875; Cruise Packing</div>
+  <h1 id="hTitle">Packing Lists</h1>
+  <div class="sub" id="hSub"></div>
   <div class="whoRow" id="whoRow" style="display:none">
     <span>Packing as <b id="whoName"></b></span>
-    <button class="switch" onclick="switchProfile()">Switch</button>
+    <button onclick="switchProfile()">Switch</button>
+    <button id="setBtn" style="display:none" onclick="openSettings()">&#9881; Trip settings</button>
   </div>
   <nav class="tabs" id="tabs"></nav>
 </header>
@@ -140,19 +146,13 @@
   <div class="box">
     <h2>Who&rsquo;s packing?</h2>
     <p>Pick your name. This sets which lists you can update &mdash; everyone can see all lists.</p>
-    <button class="who lilian" onclick="setProfile('lilian')">Lilian</button>
-    <button class="who isa" onclick="setProfile('isa')">Isa</button>
-    <button class="who camila" onclick="setProfile('camila')">Camila</button>
+    <div id="whoBtns"></div>
   </div>
 </div>
+<div class="overlay" id="settings" style="display:none"><div class="box set" id="settingsBox"></div></div>
 
 <script>
 "use strict";
-/* =====================================================================
-   FIREBASE SETUP — paste your own config between the lines below.
-   In the Firebase console: Project settings → General → Your apps →
-   SDK setup and configuration → "Config". Replace this whole object.
-   ===================================================================== */
 const FIREBASE_CONFIG = {
   apiKey: "AIzaSyDUaTB4VoJd4WbBXUIm1Pvn5d9G3LWw2Mo",
   authDomain: "cruise-packlist.firebaseapp.com",
@@ -162,15 +162,33 @@ const FIREBASE_CONFIG = {
   messagingSenderId: "798072364094",
   appId: "1:798072364094:web:74ab4498ef8ebbad3a056f"
 };
-/* ===================================================================== */
 
-const NAMES = {shared:"Shared", lilian:"Lilian", isa:"Isa", camila:"Camila", shore:"Shore Day", home:"Before Leaving"};
-const LISTS = ["shared","lilian","isa","camila","shore","home"];
-const CAN_EDIT = {
-  lilian: ["shared","lilian","isa","camila","shore","home"],
-  isa:    ["shared","lilian","isa","shore","home"],
-  camila: ["camila"]
+/* ---------------- trip meta (synced; editable in Trip settings) ---------------- */
+const GROUPS = {shared:"Shared", shore:"Shore Day", home:"Before Leaving"};
+const ROLES = {organizer:"Organizer — edits everything", helper:"Helper — edits all except \u201cOwn only\u201d lists", own:"Own only — edits just their list"};
+const COLORS = [
+  {n:"Sage green",  c:"#6d8b64", s:"#dde8d9"},
+  {n:"Turquoise",   c:"#0f7e93", s:"#d8ecef"},
+  {n:"Pale yellow", c:"#c29a2e", s:"#fdf3cf"},
+  {n:"Pink",        c:"#c85d85", s:"#fbdce6"},
+  {n:"Coral",       c:"#c45d40", s:"#fbe2da"},
+  {n:"Lavender",    c:"#7a6fae", s:"#e6e1f4"},
+  {n:"Sky blue",    c:"#4a7fa5", s:"#dcebf5"},
+  {n:"Sand",        c:"#a0783c", s:"#f6e8cf"}
+];
+const DEFAULT_META = {
+  trip:{
+    eyebrow:"\u2693 Carnival Celebration \u00b7 Jul 24 \u2013 Aug 3, 2026 \u00b7 SJ63G1",
+    title:"Cruise Packing Lists",
+    sub:"Shared list + one per traveler \u00b7 live-synced for everyone"
+  },
+  people:[
+    {id:"lilian", name:"Lilian", role:"organizer", color:"#6d8b64", soft:"#dde8d9"},
+    {id:"isa",    name:"Isa",    role:"helper",    color:"#c29a2e", soft:"#fdf3cf"},
+    {id:"camila", name:"Camila", role:"own",       color:"#c85d85", soft:"#fbdce6"}
+  ]
 };
+let meta = null;
 
 /* ---------------- seed content (from the final Word master) ---------------- */
 function C(n, items){ return {n:n, items:items.map((t,i)=>({i:"s"+i+"_"+n.length, n:t, c:0, note:""}))}; }
@@ -229,6 +247,9 @@ home: [
 ]
 };
 
+// generic list for travelers added later
+const PERSON_TEMPLATE = () => JSON.parse(JSON.stringify(SEED.camila.map(c=>({n:c.n, items:(c.items||[]).map(it=>({i:it.i,n:it.n,c:0,note:""}))}))));
+
 /* ---------------- state ---------------- */
 let profile = null;
 let cur = "shared";
@@ -238,15 +259,42 @@ let collapsed = {};
 let resetArmed = false;
 let db = null;
 let fbReady = false;
+let watched = {};
+let settingsOpen = false;
+let draft = null;   // working copy of meta while settings is open
 
 const $ = id => document.getElementById(id);
 function toast(msg){ const t=$("toast"); t.textContent=msg; t.classList.add("show");
-  clearTimeout(t._h); t._h=setTimeout(()=>t.classList.remove("show"),1800); }
+  clearTimeout(t._h); t._h=setTimeout(()=>t.classList.remove("show"),1900); }
 function esc(s){ return String(s).replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
-function canEdit(list){ return profile && CAN_EDIT[profile].includes(list); }
 function items(c){ return c.items || (c.items=[]); }
+function people(){ return (meta||DEFAULT_META).people; }
+function person(id){ return people().find(p=>p.id===id) || null; }
+function isGroup(id){ return !!GROUPS[id]; }
+function nameOf(id){ return isGroup(id) ? GROUPS[id] : (person(id)?person(id).name:id); }
+function listIds(){ return ["shared", ...people().map(p=>p.id), "shore","home"]; }
+function me(){ return person(profile); }
+function canEdit(listId){
+  const m = me(); if(!m) return false;
+  if(m.role==="organizer") return true;
+  if(listId===m.id) return true;
+  if(m.role==="own") return false;
+  // helper:
+  if(isGroup(listId)) return true;
+  const t = person(listId);
+  return !!t && t.role!=="own";
+}
+function ownersOf(listId){
+  return people().filter(p=>{
+    if(p.role==="organizer") return true;
+    if(listId===p.id) return true;
+    if(p.role==="own") return false;
+    if(isGroup(listId)) return true;
+    const t=person(listId); return !!t && t.role!=="own";
+  }).map(p=>p.name).join(" & ");
+}
 
-/* ---------------- firebase sync ---------------- */
+/* ---------------- firebase ---------------- */
 function fbConfigured(){ return FIREBASE_CONFIG.apiKey && !FIREBASE_CONFIG.apiKey.startsWith("PASTE"); }
 async function initFirebase(){
   if(!fbConfigured()) return false;
@@ -258,12 +306,27 @@ async function initFirebase(){
     return true;
   }catch(e){ console.error("Firebase init failed", e); toast("Could not connect — check the Firebase config"); return false; }
 }
+function watchMeta(){
+  db.ref("meta").on("value", snap=>{
+    const v = snap.val();
+    if(v && v.people && v.people.length){
+      if(!settingsOpen) meta = v;
+    }else{
+      db.ref("meta").transaction(curVal=>{ if(curVal===null) return DEFAULT_META; });
+      meta = DEFAULT_META;
+    }
+    listIds().forEach(watchList);
+    if(profile && !me()){ profile=null; showPicker(); }
+    renderHeader(); renderChrome(); render();
+  }, err=>{ console.error(err); toast("Sync error — are the database rules published?"); });
+}
 function watchList(id){
+  if(watched[id] || !db) return;
+  watched[id]=true;
   db.ref("packing/"+id).on("value", snap=>{
-    if(dirty[id]) return;                       // don't clobber pending local edits
+    if(dirty[id]) return;
     const v = snap.val();
     if(v){
-      // sanitize: RTDB drops empty arrays
       v.cats = v.cats || [];
       v.cats.forEach(c=>{ c.items = c.items || []; });
       if(id==="shared"){
@@ -273,22 +336,22 @@ function watchList(id){
       }
       data[id]=v;
     }else{
-      // first opener seeds the database (transaction avoids double-seed races)
+      const seedCats = SEED[id] ? SEED[id] : PERSON_TEMPLATE();
       db.ref("packing/"+id).transaction(curVal=>{
-        if(curVal===null) return {cats:SEED[id], by:"", at:Date.now()};
+        if(curVal===null) return {cats:seedCats, by:"", at:Date.now()};
       });
-      data[id]={cats:SEED[id], by:"", at:Date.now()};
+      data[id]={cats:seedCats, by:"", at:Date.now()};
     }
     if(id===cur) render(); else renderChrome();
-  }, err=>{ console.error(err); toast("Sync error — are the database rules published?"); });
+  });
 }
 function saveList(id){
   clearTimeout(dirty[id]);
   dirty[id] = setTimeout(()=>{
     delete dirty[id];
     if(!fbReady){ toast("Not connected — changes are not saving"); return; }
-    const clean = JSON.parse(JSON.stringify(data[id], (k,v)=> k.startsWith("_") ? undefined : v));
-    clean.by = NAMES[profile]||""; clean.at = Date.now();
+    const clean = JSON.parse(JSON.stringify(data[id], (k,v)=> (typeof k==="string" && k.startsWith("_")) ? undefined : v));
+    clean.by = me()?me().name:""; clean.at = Date.now();
     db.ref("packing/"+id).set(clean).catch(e=>{ console.error(e); toast("Save failed — check connection"); });
   }, 700);
 }
@@ -297,9 +360,21 @@ function saveList(id){
 function initProfile(){
   try{
     const p = localStorage.getItem("pl:profile");
-    if(p && CAN_EDIT[p]){ profile = p; return; }
+    if(p) profile = p;   // validated against meta once it loads
   }catch(e){}
-  $("overlay").style.display = "flex";
+  if(!profile) showPicker();
+}
+function showPicker(){
+  const box=$("whoBtns"); box.innerHTML="";
+  people().forEach(p=>{
+    const b=document.createElement("button");
+    b.className="who";
+    b.style.background=p.soft; b.style.borderColor=p.soft; b.style.color=p.color;
+    b.textContent=p.name;
+    b.onclick=()=>setProfile(p.id);
+    box.appendChild(b);
+  });
+  $("overlay").style.display="flex";
 }
 function setProfile(p){
   profile = p;
@@ -307,7 +382,7 @@ function setProfile(p){
   try{ localStorage.setItem("pl:profile", p); }catch(e){}
   renderChrome(); render();
 }
-function switchProfile(){ $("overlay").style.display = "flex"; }
+function switchProfile(){ showPicker(); }
 
 /* ---------------- rendering ---------------- */
 function counts(id){
@@ -315,37 +390,44 @@ function counts(id){
   (data[id]?.cats||[]).forEach(c=>items(c).forEach(it=>{tot++; if(it.c)done++;}));
   return {done, tot, pct: tot? Math.round(done/tot*100):0};
 }
+function renderHeader(){
+  const t=(meta||DEFAULT_META).trip;
+  $("hEyebrow").textContent=t.eyebrow; $("hTitle").textContent=t.title; $("hSub").textContent=t.sub;
+  document.title=t.title;
+}
 function renderChrome(){
-  if(!profile) return;
+  if(!profile || !me()) return;
   $("whoRow").style.display = "flex";
-  $("whoName").textContent = NAMES[profile];
+  $("whoName").textContent = me().name;
+  $("setBtn").style.display = me().role==="organizer" ? "inline-block" : "none";
   $("footer").style.display = "flex";
   const tabs = $("tabs"); tabs.innerHTML = "";
-  LISTS.forEach(id=>{
+  if(!listIds().includes(cur)) cur="shared";
+  listIds().forEach(id=>{
     const b=document.createElement("button");
     b.className="tab"+(id===cur?" on":"");
-    b.dataset.id=id;
+    const p=person(id);
+    if(p){ b.style.background=p.soft; b.style.color=p.color; }
     const k=counts(id);
-    b.innerHTML = esc(NAMES[id]) + '<span class="pct">'+k.pct+'%</span>';
+    b.innerHTML = esc(nameOf(id)) + '<span class="pct">'+k.pct+'%</span>';
     b.onclick=()=>{ cur=id; renderChrome(); render(); };
     tabs.appendChild(b);
   });
 }
-function ownersOf(id){
-  return Object.keys(CAN_EDIT).filter(p=>CAN_EDIT[p].includes(id)).map(p=>NAMES[p]).join(" & ");
-}
 function render(){
-  document.body.dataset.list = cur;
+  const p=person(cur);
+  document.body.style.setProperty("--accent", p?p.color:"#0f7e93");
+  document.body.style.setProperty("--accent-soft", p?p.soft:"#d8ecef");
   const main=$("main"); const list=data[cur];
   if(!list){ main.innerHTML='<div class="loading">Loading&hellip;</div>'; return; }
   const editable = canEdit(cur);
   const k = counts(cur);
   const today = new Date().toLocaleDateString(undefined,{month:"short",day:"numeric",year:"numeric"});
-  let h = '<div id="printHead">'+esc(NAMES[cur])+' \u2014 Cruise Packing \u00b7 Carnival Celebration SJ63G1'
+  let h = '<div id="printHead">'+esc(nameOf(cur))+' \u2014 '+esc((meta||DEFAULT_META).trip.title)
     + '<small>'+k.done+' of '+k.tot+' packed \u00b7 printed '+esc(today)
-    + (profile? ' by '+esc(NAMES[profile]) : '')+'</small></div>';
-  if(!fbConfigured()) h += '<div class="banner setup">&#9881; Setup needed: paste your Firebase config into this file (see the comment at the top of the script) — nothing will sync until then.</div>';
-  if(!editable) h += '<div class="banner">&#128065; View only — '+esc(NAMES[cur])+"'s list is updated by "+ownersOf(cur)+'.</div>';
+    + (me()? ' by '+esc(me().name) : '')+'</small></div>';
+  if(!fbConfigured()) h += '<div class="banner setup">&#9881; Setup needed: paste your Firebase config into this file — nothing will sync until then.</div>';
+  if(!editable) h += '<div class="banner">&#128065; View only — '+esc(nameOf(cur))+"'s list is updated by "+esc(ownersOf(cur))+'.</div>';
   h += '<div class="progressWrap"><div class="progressBar" style="width:'+k.pct+'%"></div></div>';
   list.cats.forEach((c,ci)=>{
     const its = items(c);
@@ -353,7 +435,10 @@ function render(){
     const col = collapsed[cur+"|"+c.n];
     h += '<section class="cat"><div class="catHead" onclick="toggleCat('+ci+')">'
       + '<h2>'+esc(c.n)+'</h2><span class="count">'+cd+' / '+its.length;
-    if(editable && its.length===0){
+    if(canEdit(cur) && cd>0){
+      h += ' <button class="iconBtn" title="Reset checkmarks in this category" onclick="event.stopPropagation();resetCat('+ci+')">&#8634;</button>';
+    }
+    if(canEdit(cur) && its.length===0){
       h += ' <button class="iconBtn del" title="Remove empty category" onclick="event.stopPropagation();delCat('+ci+')">&times;</button>';
     }
     h += ' <span class="chev">'+(col?"&#9656;":"&#9662;")+'</span></span></div>';
@@ -392,7 +477,7 @@ function render(){
   renderChrome();
 }
 
-/* ---------------- actions ---------------- */
+/* ---------------- list actions ---------------- */
 function toggleCat(ci){ const key=cur+"|"+data[cur].cats[ci].n; collapsed[key]=!collapsed[key]; render(); }
 function toggleItem(ci,ii,val){
   if(!canEdit(cur)) return;
@@ -441,6 +526,23 @@ function saveNote(ci,ii,val){
   it.note=(val||"").trim(); delete it._editNote;
   saveList(cur); render();
 }
+function resetCat(ci){
+  if(!canEdit(cur)) return;
+  const c=data[cur].cats[ci];
+  if(!c._armReset){ c._armReset=true; toast('Tap \u21ba again to clear "'+c.n+'"');
+    setTimeout(()=>{delete c._armReset;},2500); return; }
+  delete c._armReset;
+  items(c).forEach(it=>it.c=0);
+  saveList(cur); render(); toast('"'+c.n+'" cleared');
+}
+function resetChecks(){
+  if(!canEdit(cur)){ toast("View-only list"); return; }
+  if(!resetArmed){ resetArmed=true; $("resetBtn").textContent="Tap again to confirm";
+    setTimeout(()=>{resetArmed=false; $("resetBtn").textContent="Reset checkmarks";},2500); return; }
+  resetArmed=false; $("resetBtn").textContent="Reset checkmarks";
+  data[cur].cats.forEach(c=>items(c).forEach(it=>it.c=0));
+  saveList(cur); render(); toast(nameOf(cur)+" checkmarks cleared");
+}
 function printList(){
   const keys=Object.keys(collapsed).filter(k=>k.startsWith(cur+"|")&&collapsed[k]);
   keys.forEach(k=>collapsed[k]=false);
@@ -449,13 +551,80 @@ function printList(){
   window.onafterprint=restore;
   setTimeout(()=>{ window.print(); setTimeout(restore,1500); }, 60);
 }
-function resetChecks(){
-  if(!canEdit(cur)){ toast("View-only list"); return; }
-  if(!resetArmed){ resetArmed=true; $("resetBtn").textContent="Tap again to confirm";
-    setTimeout(()=>{resetArmed=false; $("resetBtn").textContent="Reset checkmarks";},2500); return; }
-  resetArmed=false; $("resetBtn").textContent="Reset checkmarks";
-  data[cur].cats.forEach(c=>items(c).forEach(it=>it.c=0));
-  saveList(cur); render(); toast(NAMES[cur]+" checkmarks cleared");
+
+/* ---------------- trip settings (organizer only) ---------------- */
+function openSettings(){
+  if(!me() || me().role!=="organizer"){ toast("Only the organizer can change trip settings"); return; }
+  draft = JSON.parse(JSON.stringify(meta||DEFAULT_META));
+  settingsOpen = true;
+  renderSettings();
+  $("settings").style.display="flex";
+}
+function colorOptions(sel){
+  return COLORS.map(c=>'<option value="'+c.c+'|'+c.s+'"'+(sel===c.c?' selected':'')+'>'+c.n+'</option>').join('');
+}
+function renderSettings(){
+  const b=$("settingsBox");
+  let h='<h2>Trip settings</h2><p>Changes apply to everyone when you save.</p>';
+  h+='<h3>Trip info</h3>';
+  h+='<label>Top line (small print)</label><input type="text" id="tEye" value="'+esc(draft.trip.eyebrow)+'">';
+  h+='<label>Title</label><input type="text" id="tTitle" value="'+esc(draft.trip.title)+'">';
+  h+='<label>Subtitle</label><input type="text" id="tSub" value="'+esc(draft.trip.sub)+'">';
+  h+='<h3>Travelers</h3>';
+  draft.people.forEach((p,i)=>{
+    h+='<div class="pRow">'
+      +'<span class="dot" style="background:'+esc(p.color)+'"></span>'
+      +'<input type="text" value="'+esc(p.name)+'" onchange="draft.people['+i+'].name=this.value">'
+      +'<select onchange="setRole('+i+',this.value)">'
+        +Object.keys(ROLES).map(r=>'<option value="'+r+'"'+(p.role===r?' selected':'')+'>'+ROLES[r]+'</option>').join('')
+      +'</select>'
+      +'<select onchange="setColor('+i+',this.value)">'+colorOptions(p.color)+'</select>'
+      +'<button class="iconBtn del" title="Remove traveler" onclick="removePerson('+i+')">&times;</button>'
+      +'</div>';
+  });
+  h+='<div class="addPerson"><input type="text" id="npName" placeholder="New traveler\u2019s name">'
+    +'<button onclick="addPerson()">+ Add</button></div>';
+  h+='<p style="text-align:left;font-size:11.5px;margin-top:8px">A new traveler gets a fresh copy of the standard individual list and shows up as a tab on everyone\u2019s phone. Removing a traveler deletes their tab and their list data.</p>';
+  h+='<div class="setBtns"><button class="cancel" onclick="closeSettings()">Cancel</button>'
+    +'<button class="save" onclick="saveSettings()">Save changes</button></div>';
+  b.innerHTML=h;
+}
+function setRole(i,v){ draft.people[i].role=v; }
+function setColor(i,v){ const [c,s]=v.split("|"); draft.people[i].color=c; draft.people[i].soft=s; renderSettings(); }
+function addPerson(){
+  const inp=$("npName"); const v=(inp.value||"").trim(); if(!v) return;
+  if(draft.people.some(p=>p.name.toLowerCase()===v.toLowerCase())){ toast("That name is already on the trip"); return; }
+  const used=draft.people.map(p=>p.color);
+  const free=COLORS.find(c=>!used.includes(c.c))||COLORS[0];
+  const id=v.toLowerCase().replace(/[^a-z0-9]/g,"").slice(0,12)+"_"+Date.now().toString(36);
+  draft.people.push({id:id, name:v, role:"own", color:free.c, soft:free.s});
+  inp.value=""; renderSettings();
+}
+function removePerson(i){
+  const p=draft.people[i];
+  if(p.id===profile){ toast("You can't remove yourself"); return; }
+  if(p.role==="organizer" && draft.people.filter(x=>x.role==="organizer").length===1){
+    toast("The trip needs at least one organizer"); return; }
+  if(!p._armDel){ p._armDel=true; toast('Tap \u00d7 again to remove '+p.name+' and their list');
+    setTimeout(()=>{delete p._armDel;},2500); return; }
+  draft.people.splice(i,1); renderSettings();
+}
+function closeSettings(){ settingsOpen=false; draft=null; $("settings").style.display="none"; }
+function saveSettings(){
+  draft.trip.eyebrow=$("tEye").value.trim();
+  draft.trip.title=$("tTitle").value.trim()||"Packing Lists";
+  draft.trip.sub=$("tSub").value.trim();
+  if(!draft.people.some(x=>x.role==="organizer")){ toast("The trip needs at least one organizer"); return; }
+  const removed = people().filter(p=>!draft.people.some(d=>d.id===p.id));
+  const clean = JSON.parse(JSON.stringify(draft, (k,v)=> (typeof k==="string" && k.startsWith("_")) ? undefined : v));
+  meta = clean;
+  settingsOpen=false; $("settings").style.display="none"; draft=null;
+  if(fbReady){
+    db.ref("meta").set(clean).catch(e=>{ console.error(e); toast("Save failed — check connection"); });
+    removed.forEach(p=>{ db.ref("packing/"+p.id).remove(); delete data[p.id]; });
+  }
+  renderHeader(); renderChrome(); render();
+  toast("Trip settings saved");
 }
 
 /* ---------------- boot ---------------- */
@@ -463,13 +632,14 @@ function resetChecks(){
   initProfile();
   const ok = await initFirebase();
   if(ok){
-    LISTS.forEach(watchList);
+    watchMeta();
   }else{
-    // no backend yet: show seeded lists locally so the page is still browsable
-    LISTS.forEach(id=>{ data[id]={cats:SEED[id], by:"", at:0}; });
+    meta = DEFAULT_META;
+    listIds().forEach(id=>{ data[id]={cats: SEED[id]?SEED[id]:PERSON_TEMPLATE(), by:"", at:0}; });
+    renderHeader();
+    if(profile) renderChrome();
+    render();
   }
-  if(profile) renderChrome();
-  render();
 })();
 </script>
 </body>
