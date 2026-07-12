@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cruise Packing — Carnival Celebration · SJ63G1</title>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+<style>
+  :root{
+    --sea:#0b5d70; --sea2:#0f7e93; --sand:#fbe7cf; --paper:#fbf8f1;
+    --ink:#13252b; --muted:#6e8086; --line:#e7ddc9; --coral:#e2674a; --coral-soft:#fbe2da;
+    --ok:#1f9e84; --gold:#d2972f; --card:#ffffff;
+    --accent:#0f7e93; --accent-soft:#d8ecef;
+    --lilian:#6d8b64; --lilian-soft:#dde8d9;
+    --isa:#c29a2e;    --isa-soft:#fdf3cf;
+    --camila:#c85d85; --camila-soft:#fbdce6;
+    --shadow:0 1px 2px rgba(13,40,46,.05),0 3px 10px rgba(13,40,46,.06);
+  }
+  body[data-list="lilian"]{--accent:var(--lilian);--accent-soft:var(--lilian-soft)}
+  body[data-list="isa"]{--accent:var(--isa);--accent-soft:var(--isa-soft)}
+  body[data-list="camila"]{--accent:var(--camila);--accent-soft:var(--camila-soft)}
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{background:var(--paper);color:var(--ink);
+    font:14.5px/1.35 -apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    -webkit-tap-highlight-color:transparent;}
+  header{background:linear-gradient(135deg,var(--sea),var(--sea2));color:#fff;
+    padding:10px 12px 0;box-shadow:var(--shadow)}
+  .eyebrow{font-size:11px;letter-spacing:.18em;text-transform:uppercase;opacity:.85}
+  h1{margin:1px 0 1px;font-size:18px;font-weight:800;letter-spacing:.01em}
+  .sub{font-size:12px;opacity:.85;margin-bottom:6px}
+  .whoRow{display:flex;align-items:center;gap:8px;font-size:12px;margin-bottom:6px}
+  .whoRow b{font-weight:700}
+  .whoRow button{background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.35);
+    color:#fff;border-radius:99px;padding:3px 12px;font-size:12px;cursor:pointer}
+  .tabs{display:flex;gap:6px;overflow-x:auto;padding:0 0 0 2px;scrollbar-width:none}
+  .tabs::-webkit-scrollbar{display:none}
+  .tab{flex:0 0 auto;position:relative;background:var(--sand);color:var(--sea);
+    border:none;border-radius:10px 14px 0 0;padding:6px 12px 6px 22px;font-size:12.5px;
+    font-weight:700;cursor:pointer;opacity:.72;transform:translateY(3px);transition:.15s}
+  .tab::before{content:"";position:absolute;left:7px;top:50%;width:8px;height:8px;
+    border-radius:50%;transform:translateY(-50%);
+    background:var(--paper);box-shadow:inset 0 0 0 2px var(--sea)}
+  .tab[data-id="lilian"]{background:var(--lilian-soft);color:#48603f}
+  .tab[data-id="isa"]{background:var(--isa-soft);color:#7d6014}
+  .tab[data-id="camila"]{background:var(--camila-soft);color:#9c3e66}
+  .tab.on{opacity:1;transform:none;box-shadow:var(--shadow)}
+  .tab .pct{font-weight:600;font-size:11px;opacity:.75;margin-left:5px}
+  main{max-width:760px;margin:0 auto;padding:10px 10px 74px}
+  .banner{display:flex;align-items:center;gap:8px;background:var(--coral-soft);
+    border-left:4px solid var(--coral);border-radius:8px;padding:6px 10px;
+    font-size:12px;margin:2px 0 8px}
+  .banner.setup{background:#fff4d6;border-left-color:var(--gold)}
+  .progressWrap{background:#e8e2d2;border-radius:99px;height:7px;overflow:hidden;margin:3px 0 10px}
+  .progressBar{height:100%;background:var(--accent);border-radius:99px;transition:width .3s}
+  .cat{background:var(--card);border:1px solid var(--line);border-radius:10px;
+    box-shadow:var(--shadow);margin-bottom:8px;overflow:hidden}
+  .catHead{display:flex;justify-content:space-between;align-items:center;gap:8px;
+    padding:7px 11px;cursor:pointer;user-select:none}
+  .catHead h2{margin:0;font-size:13px;color:var(--accent);font-weight:800;letter-spacing:.01em}
+  .catHead .count{font-size:11px;color:var(--muted);white-space:nowrap;display:flex;align-items:center;gap:4px}
+  .catHead .chev{color:var(--muted);font-size:12px;margin-left:2px}
+  .items{border-top:1px solid var(--line)}
+  .item{display:flex;align-items:flex-start;gap:8px;padding:5px 10px;border-bottom:1px solid #f1ece0}
+  .item:last-child{border-bottom:none}
+  .item input[type=checkbox]{width:18px;height:18px;margin-top:1px;accent-color:var(--accent);flex:0 0 auto}
+  .item .txt{flex:1;font-size:13.5px}
+  .item.done .txt{color:var(--muted);text-decoration:line-through}
+  .item .note{display:block;font-size:11px;color:var(--gold);margin-top:1px;text-decoration:none}
+  .iconBtn{background:none;border:none;color:var(--muted);font-size:15px;cursor:pointer;
+    padding:2px 5px;flex:0 0 auto;line-height:1}
+  .iconBtn.del{color:#c05a49}
+  .noteInput{width:100%;margin-top:4px;border:1px solid var(--line);border-radius:7px;
+    padding:5px 8px;font-size:13px}
+  .addRow{display:flex;gap:6px;padding:6px 10px;background:#fdfbf5;border-top:1px dashed var(--line)}
+  .addRow input{flex:1;border:1px solid var(--line);border-radius:8px;padding:5px 8px;font-size:13px}
+  .addRow button{background:var(--accent);color:#fff;border:none;border-radius:8px;
+    padding:5px 12px;font-weight:700;font-size:12.5px;cursor:pointer}
+  .addCat{display:flex;gap:6px;margin:2px 0 14px}
+  .addCat input{flex:1;border:1px dashed var(--line);background:#fffdf6;border-radius:8px;padding:6px 10px;font-size:13px}
+  .addCat button{background:#fff;color:var(--accent);border:1.5px solid var(--accent);
+    border-radius:8px;padding:5px 12px;font-weight:700;font-size:12.5px;cursor:pointer}
+  footer{position:fixed;left:0;right:0;bottom:0;background:#fffdf8;border-top:1px solid var(--line);
+    display:flex;gap:6px;justify-content:center;padding:7px;box-shadow:0 -2px 10px rgba(13,40,46,.06)}
+  footer button{background:#fff;border:1px solid var(--line);border-radius:99px;
+    padding:6px 12px;font-size:12.5px;font-weight:600;color:var(--sea);cursor:pointer}
+  footer button.warn{color:#c05a49}
+  .toast{position:fixed;left:50%;bottom:56px;transform:translateX(-50%);
+    background:var(--ink);color:#fff;font-size:13px;border-radius:99px;
+    padding:8px 16px;opacity:0;pointer-events:none;transition:opacity .25s;z-index:50}
+  .toast.show{opacity:.94}
+  .overlay{position:fixed;inset:0;background:rgba(11,53,64,.72);display:flex;
+    align-items:center;justify-content:center;z-index:100;padding:20px}
+  .overlay .box{background:var(--paper);border-radius:16px;padding:22px 20px;max-width:360px;width:100%;
+    text-align:center;box-shadow:0 10px 40px rgba(0,0,0,.3)}
+  .overlay h2{margin:0 0 4px;color:var(--sea);font-size:18px}
+  .overlay p{font-size:13px;color:var(--muted);margin:0 0 14px}
+  .overlay .who{display:block;width:100%;margin-bottom:8px;background:#fff;border:2px solid var(--line);
+    border-radius:12px;padding:11px;font-size:15px;font-weight:700;cursor:pointer}
+  .overlay .who.lilian{color:#48603f;border-color:var(--lilian-soft);background:var(--lilian-soft)}
+  .overlay .who.isa{color:#7d6014;border-color:var(--isa-soft);background:var(--isa-soft)}
+  .overlay .who.camila{color:#9c3e66;border-color:var(--camila-soft);background:var(--camila-soft)}
+  .loading{padding:50px 0;text-align:center;color:var(--muted);font-size:14px}
+  .pbox{display:none}
+  #printHead{display:none}
+  @media print{
+    header,.addRow,.addCat,footer,.iconBtn,.banner{display:none!important}
+    body{background:#fff}
+    .cat{box-shadow:none;break-inside:avoid}
+    main{padding:0;max-width:none}
+    .item input[type=checkbox]{display:none}
+    .pbox{display:inline;font-size:14px;line-height:1;margin-right:6px;flex:0 0 auto}
+    .item.done .txt{color:#777}
+    #printHead{display:block;border-bottom:2px solid #333;padding-bottom:4px;margin-bottom:8px;
+      font-size:15px;font-weight:800}
+    #printHead small{display:block;font-weight:400;font-size:11px;color:#555;margin-top:1px}
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="eyebrow">&#9875; Carnival Celebration &middot; Jul 24 &ndash; Aug 3, 2026 &middot; SJ63G1</div>
+  <h1>Cruise Packing Lists</h1>
+  <div class="sub">Shared list + one per traveler &middot; live-synced for everyone</div>
+  <div class="whoRow" id="whoRow" style="display:none">
+    <span>Packing as <b id="whoName"></b></span>
+    <button class="switch" onclick="switchProfile()">Switch</button>
+  </div>
+  <nav class="tabs" id="tabs"></nav>
+</header>
+<main id="main"><div class="loading">Loading your lists&hellip;</div></main>
+<footer id="footer" style="display:none">
+  <button onclick="printList()">&#128424; Print this list</button>
+  <button class="warn" id="resetBtn" onclick="resetChecks()">Reset checkmarks</button>
+</footer>
+<div class="toast" id="toast"></div>
+<div class="overlay" id="overlay" style="display:none">
+  <div class="box">
+    <h2>Who&rsquo;s packing?</h2>
+    <p>Pick your name. This sets which lists you can update &mdash; everyone can see all lists.</p>
+    <button class="who lilian" onclick="setProfile('lilian')">Lilian</button>
+    <button class="who isa" onclick="setProfile('isa')">Isa</button>
+    <button class="who camila" onclick="setProfile('camila')">Camila</button>
+  </div>
+</div>
+
+<script>
+"use strict";
+/* =====================================================================
+   FIREBASE SETUP — paste your own config between the lines below.
+   In the Firebase console: Project settings → General → Your apps →
+   SDK setup and configuration → "Config". Replace this whole object.
+   ===================================================================== */
+const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyDUaTB4VoJd4WbBXUIm1Pvn5d9G3LWw2Mo",
+  authDomain: "cruise-packlist.firebaseapp.com",
+  databaseURL: "https://cruise-packlist-default-rtdb.firebaseio.com",
+  projectId: "cruise-packlist",
+  storageBucket: "cruise-packlist.firebasestorage.app",
+  messagingSenderId: "798072364094",
+  appId: "1:798072364094:web:74ab4498ef8ebbad3a056f"
+};
+/* ===================================================================== */
+
+const NAMES = {shared:"Shared", lilian:"Lilian", isa:"Isa", camila:"Camila", shore:"Shore Day", home:"Before Leaving"};
+const LISTS = ["shared","lilian","isa","camila","shore","home"];
+const CAN_EDIT = {
+  lilian: ["shared","lilian","isa","camila","shore","home"],
+  isa:    ["shared","lilian","isa","shore","home"],
+  camila: ["camila"]
+};
+
+/* ---------------- seed content (from the final Word master) ---------------- */
+function C(n, items){ return {n:n, items:items.map((t,i)=>({i:"s"+i+"_"+n.length, n:t, c:0, note:""}))}; }
+const SEED = {
+shared: [
+ C("Documents & Money (group set)", ["Documents holder","Smart tags for passports","Carnival boarding passes (printed)","Excursion confirmations (Celebration Key rental)","Luggage tags & protectors","Hotel confirmations — Miami and Palm Beach","Printed flight confirmations — IND→MIA & PBI→IND","Travel insurance — Carnival Vacation Protection certificate","Enterprise confirmations — MIA & MIA→PBI","Cash for ports & tips — small USD bills","Copies of all passports (stored separately from originals)","Port agent phone numbers (each port)","Coin purse / coins","Printed copy of packing list & outfit planners","Sail & Sign lanyards / badge holders","Photos of all luggage"]),
+ C("Medicines & First Aid Kit", ["Advil / ibuprofen","Tylenol","Dramamine or Bonine (motion sickness)","Nausea bands (3)","Motion sickness patches","Anti-diarrheal (Imodium)","Antacid (Tums / Pepcid)","Antihistamine (Benadryl / Zyrtec)","Hydrocortisone cream","Cold & flu basics (DayQuil, throat lozenges)","Thermometer","Band-aids + antibiotic cream","Blister band-aids","Reef-safe sunscreen SPF 50 (carry on)","Reef-safe sunscreen — spray (checked bag)","SPF lip balm (one per person)","Aloe vera after-sun gel","Insect repellent (ports)","Hand sanitizer (one per day bag)","Disinfectant / Clorox wipes","Electrolyte packets (Liquid IV — Caribbean heat)","Bug bite relief","Bug bite patches","Laxative","Masks","Back-pain cream","Blood pressure monitor","Blood sugar monitor","Alcohol spray"]),
+ C("Cabin Setup & Organization", ["Magnetic hooks, heavy-duty (8–10)","Tacky putty","Magnets","Hanging closet / over-the-door organizer","Non-surge power strip / multi-port USB charger","Wet bags (3) — damp swimwear","Popup hamper","TSA locks for suitcases (flights/hotel — unlocked for porters)","Night light (motion-sensor)","Sticky notes + highlighters (Fun Times newsletter)","Portable safe / lock box","Sandwich / gallon ziplock bags","Room decor — door magnets, cutouts, etc.","Wrinkle-release spray (clothes irons prohibited)","Bathroom spray (odors)","Cabin alarm","Hangers","Laundry detergent pods (2–3) — hotel guest laundry; ship is valet-only","Flushable wipes (on ship: trash, never the toilet)"]),
+ C("Beach & Shore Gear", ["Beach towel holders / towel bands (two types)","Waterproof phone pouches with lanyards (3)","Dry bag for wet excursions","Rain ponchos (9)","Snorkel sets + goggles","Packable daypack / beach bag (large)","Insulated reusable water bottles (3)","Cooling towels","Visors / sun hats bag","Beach games","Swimsuit pouches (wet bags)","Small first aid kit","Compact travel umbrella"]),
+ C("Tech & Power", ["Power banks (3) — must fly in carry-ons, never checked","Wall charging cubes + cables (USB-C / Lightning)","Camera USB transfer cable","Extra-long charging cable (outlet is far from bed)","Phone magnet mount (for the rental cars)"]),
+ C("Games & Fun", ["Uno","Deck of cards","Travel games / puzzle books","Books / e-readers","Sketch books, journals, pencils & colors"]),
+ C("Snacks & Beverages (sealed, non-perishable)", ["Protein bars","Almonds, nuts","Gummies","Favorite candy","Doritos","Takis","Keto stuff Lilian","Splenda / sweetener packets","Snack bag clips","Travel coffee mug","Coffee powders (Lilian)","Plastic utensils + paper towels","One 750 ml bottle of wine per adult (carry-on, embarkation only)","Up to 12 sealed cans soda/juice per person (carry-on)"])
+],
+lilian: [
+ C("Documents & Wallet (on your person)", ["Passport","Government photo ID (Grand Turk re-entry rule)","Wallet — credit card","Wallet — cash"]),
+ C("Clothing (11 days)", ["Tops / t-shirts / tanks (11–12)","Shorts / capris / bottoms (4–5)","Sundresses (3–4)","Cruise Elegant outfits (2)","White outfit — White Night deck party (1)","Neon outfit — '80s Rock-N-Glow deck party (1)","Light sweater or wrap (2)","Pajamas (2)","Underwear (12–14)","Bras (4)","Socks (5–6)","Comfortable travel outfits (2) — flight days","Running outfit"]),
+ C("Shoes", ["Walking sneakers (broken in)","Everyday sandals","Flip flops (pool/beach)","Water shoes","Dress sandals / shoes (elegant nights)","Running shoes"]),
+ C("Swim", ["Swimsuits (2 — one dries while you wear one)","Swim cover-ups (2)","Board / swim shorts","Rashguard","Sun hat or visor (UPF)","Sunglasses + case"]),
+ C("Toiletries & Personal Care", ["Toothbrush + toothpaste + floss","Deodorant","Shampoo / conditioner / soap (or share cabin set)","Skincare + lotion + coconut oil","Makeup + remover","Razor","Hair brush / comb + hair things","Curling iron / straightener (clothes irons are not allowed)","Hair mousse / gel","Hair spray","Nail clippers + file","Tweezers (pinza de cejas)","Glasses / contacts + solution + case"]),
+ C("Medications (carry-on, original containers)", ["Rx","Zepbound","Supplements"]),
+ C("Electronics", ["Nikon camera + case + strap","SD memory cards (2) + spare battery","Camera charger + USB transfer cable","Inexpensive water-resistant watch","Phone + charger","Earbuds","Personal laptop + charger","Work laptop + charger"]),
+ C("Flight Carry-On (TSA 3-1-1)", ["Backpack + purse (both allowed)","All Rx meds + one day of essentials","Documents & wallet","Phone + power bank (power banks fly carry-on only)","Sweater / blanket","Liquids ≤ 3.4 oz in one quart bag","Change of clothes (in case checked bag is delayed)"]),
+ C("Embarkation-Day Bag (Jul 26)", ["Swimsuit + cover-up (pools open before cabins)","Sunscreen + sunglasses","Meds for the day","Documents, ship boarding pass, wallet","Phone + charger + power bank","Water bottle"]),
+ C("My Additions", [])
+],
+isa: [
+ C("Documents & Wallet (on your person)", ["Passport","Government photo ID (Grand Turk re-entry rule)","Wallet — credit card + cash","Sail & Sign lanyard / badge holder"]),
+ C("Clothing (11 days)", ["Tops / t-shirts / tanks (11–12)","Shorts / capris / bottoms (4–5)","Sundresses (3–4)","Cruise Elegant outfits (2)","White outfit — White Night deck party (1)","Neon outfit — '80s Rock-N-Glow deck party (1)","Light sweater or wrap (2)","Pajamas (2)","Underwear (12–14)","Bras (4)","Socks (5–6)","Comfortable travel outfit — flight days"]),
+ C("Shoes", ["Walking sneakers (broken in)","Everyday sandals","Flip flops (pool/beach)","Water shoes","Dress sandals / shoes (elegant nights)"]),
+ C("Swim", ["Swimsuits","Swim cover-ups","Board / swim shorts","Rashguard","Sun hat or visor (UPF)","Sunglasses + case"]),
+ C("Toiletries & Personal Care", ["Toothbrush + toothpaste + floss","Deodorant","Shampoo / conditioner / soap (or share cabin set)","Skincare + lotion + coconut oil","Makeup + remover","Razor","Hair brush / comb + hair things","Curling iron / straightener (clothes irons are not allowed)","Hair mousse / gel","Nail clippers + file","Feminine products / daily liners","Glasses / contacts + solution + case"]),
+ C("Medications (carry-on, original containers)", ["Rx — AM and PM meds"]),
+ C("Knee Care & Comfort", ["Knee compression sleeves (2 — one dries while one is worn)","Knee brace (excursion days)","Instant cold packs (2–3)","PT / resistance band (if still doing exercises)","Supportive cushioned walking shoes — priority over fashion","Pain reliever in the shore day bag every port day"]),
+ C("Electronics", ["Phone + charger + earbuds","Digital camera + cables (optional)"]),
+ C("Flight Carry-On (TSA 3-1-1)", ["Backpack + purse (both allowed)","All Rx meds + one day of essentials","Documents & wallet","Phone + power bank (power banks fly carry-on only)","Sweater / blanket","Liquids ≤ 3.4 oz in one quart bag","Change of clothes (in case checked bag is delayed)"]),
+ C("Embarkation-Day Bag (Jul 26)", ["Swimsuit + cover-up","Light sundress","Sunscreen + sunglasses","Meds for the day","Documents, ship boarding pass, wallet","Phone + charger + power bank","Water bottle"]),
+ C("My Additions", [])
+],
+camila: [
+ C("Documents & Wallet (on your person)", ["Passport","Government photo ID (Grand Turk re-entry rule)","Wallet — credit card + cash","Sail & Sign lanyard / badge holder"]),
+ C("Clothing (11 days)", ["Tops / t-shirts / tanks (11–12)","Shorts / capris / bottoms (4–5)","Sundresses (3–4)","Cruise Elegant outfits (2)","White outfit — White Night deck party (1)","Neon outfit — '80s Rock-N-Glow deck party (1)","Light sweater or wrap (2)","Pajamas (2)","Underwear (12–14)","Bras (4)","Socks (5–6)","Comfortable travel outfit — flight days"]),
+ C("Shoes", ["Walking sneakers (broken in)","Everyday sandals","Flip flops (pool/beach)","Water shoes","Dress sandals / shoes (elegant nights)"]),
+ C("Swim", ["Swimsuits","Swim cover-ups","Board / swim shorts","Rashguard","Sun hat or visor (UPF)","Sunglasses + case"]),
+ C("Toiletries & Personal Care", ["Toothbrush + toothpaste + floss","Deodorant","Skincare + lotion + coconut oil","Razor","Curling iron / straightener (clothes irons are not allowed)","Hair brush / comb + hair things","Hair products","Nail clippers + file","Feminine products / daily liners","Glasses + case"]),
+ C("Medications (carry-on, original containers)", ["Rx — AM and PM meds"]),
+ C("Electronics", ["Phone + charger + earbuds"]),
+ C("Flight Carry-On (TSA 3-1-1)", ["Backpack + purse (both allowed)","All Rx meds + one day of essentials","Documents & wallet","Phone + power bank (power banks fly carry-on only)","Sweater / blanket","Liquids ≤ 3.4 oz in one quart bag","Change of clothes (in case checked bag is delayed)"]),
+ C("Embarkation-Day Bag (Jul 26)", ["Swimsuit + cover-up","Light sundress","Sunscreen + sunglasses","Meds for the day","Documents, ship boarding pass, wallet","Phone + charger + power bank","Water bottle"]),
+ C("My Additions", [])
+],
+shore: [
+ C("Shore-Day Bag (pack the night before each port)", ["Sail & Sign cards (everyone)","Government photo IDs (everyone — Grand Turk rule)","Excursion ticket / confirmation","Cash (small bills) + one credit card","Port agent phone number","Fun Times newsletter (back-onboard time!)","Phones","Waterproof pouches","Power bank","Reef-safe sunscreen","SPF lip balm","Itch relief","Small first aid kit","Sunglasses","Hats","Ship beach towels (swap onboard — don't pack your own)","Towel bands","Water bottles (filled)","Snacks","Snorkel gear / goggles (beach days)","Water shoes","Hand sanitizer + tissues + band-aids + Tylenol","Dry bag","Wet bags","Ponchos (rainy forecast days)","Isa — knee sleeve + pain reliever"])
+],
+home: [
+ C("Before You Leave Home", ["Photo of all luggage + photo of cruise ID cards","Arm home alarm + call Frontpoint about vacation","Lamp / appliance timers set","Shut off water + unplug devices + lock doors & windows","Call T-Mobile — international / cruise plan","Bank run — small bills for ports & tips","Chico's boarding drop-off confirmed","Plant care arranged"])
+]
+};
+
+/* ---------------- state ---------------- */
+let profile = null;
+let cur = "shared";
+let data = {};
+let dirty = {};
+let collapsed = {};
+let resetArmed = false;
+let db = null;
+let fbReady = false;
+
+const $ = id => document.getElementById(id);
+function toast(msg){ const t=$("toast"); t.textContent=msg; t.classList.add("show");
+  clearTimeout(t._h); t._h=setTimeout(()=>t.classList.remove("show"),1800); }
+function esc(s){ return String(s).replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
+function canEdit(list){ return profile && CAN_EDIT[profile].includes(list); }
+function items(c){ return c.items || (c.items=[]); }
+
+/* ---------------- firebase sync ---------------- */
+function fbConfigured(){ return FIREBASE_CONFIG.apiKey && !FIREBASE_CONFIG.apiKey.startsWith("PASTE"); }
+async function initFirebase(){
+  if(!fbConfigured()) return false;
+  try{
+    firebase.initializeApp(FIREBASE_CONFIG);
+    await firebase.auth().signInAnonymously();
+    db = firebase.database();
+    fbReady = true;
+    return true;
+  }catch(e){ console.error("Firebase init failed", e); toast("Could not connect — check the Firebase config"); return false; }
+}
+function watchList(id){
+  db.ref("packing/"+id).on("value", snap=>{
+    if(dirty[id]) return;                       // don't clobber pending local edits
+    const v = snap.val();
+    if(v){
+      // sanitize: RTDB drops empty arrays
+      v.cats = v.cats || [];
+      v.cats.forEach(c=>{ c.items = c.items || []; });
+      if(id==="shared"){
+        const n0=v.cats.length;
+        v.cats=v.cats.filter(c=>!/^(Shore-Day Bag|Before You Leave Home)/.test(c.n));
+        if(v.cats.length!==n0) db.ref("packing/"+id).set(v);
+      }
+      data[id]=v;
+    }else{
+      // first opener seeds the database (transaction avoids double-seed races)
+      db.ref("packing/"+id).transaction(curVal=>{
+        if(curVal===null) return {cats:SEED[id], by:"", at:Date.now()};
+      });
+      data[id]={cats:SEED[id], by:"", at:Date.now()};
+    }
+    if(id===cur) render(); else renderChrome();
+  }, err=>{ console.error(err); toast("Sync error — are the database rules published?"); });
+}
+function saveList(id){
+  clearTimeout(dirty[id]);
+  dirty[id] = setTimeout(()=>{
+    delete dirty[id];
+    if(!fbReady){ toast("Not connected — changes are not saving"); return; }
+    const clean = JSON.parse(JSON.stringify(data[id], (k,v)=> k.startsWith("_") ? undefined : v));
+    clean.by = NAMES[profile]||""; clean.at = Date.now();
+    db.ref("packing/"+id).set(clean).catch(e=>{ console.error(e); toast("Save failed — check connection"); });
+  }, 700);
+}
+
+/* ---------------- profile (per device) ---------------- */
+function initProfile(){
+  try{
+    const p = localStorage.getItem("pl:profile");
+    if(p && CAN_EDIT[p]){ profile = p; return; }
+  }catch(e){}
+  $("overlay").style.display = "flex";
+}
+function setProfile(p){
+  profile = p;
+  $("overlay").style.display = "none";
+  try{ localStorage.setItem("pl:profile", p); }catch(e){}
+  renderChrome(); render();
+}
+function switchProfile(){ $("overlay").style.display = "flex"; }
+
+/* ---------------- rendering ---------------- */
+function counts(id){
+  let done=0, tot=0;
+  (data[id]?.cats||[]).forEach(c=>items(c).forEach(it=>{tot++; if(it.c)done++;}));
+  return {done, tot, pct: tot? Math.round(done/tot*100):0};
+}
+function renderChrome(){
+  if(!profile) return;
+  $("whoRow").style.display = "flex";
+  $("whoName").textContent = NAMES[profile];
+  $("footer").style.display = "flex";
+  const tabs = $("tabs"); tabs.innerHTML = "";
+  LISTS.forEach(id=>{
+    const b=document.createElement("button");
+    b.className="tab"+(id===cur?" on":"");
+    b.dataset.id=id;
+    const k=counts(id);
+    b.innerHTML = esc(NAMES[id]) + '<span class="pct">'+k.pct+'%</span>';
+    b.onclick=()=>{ cur=id; renderChrome(); render(); };
+    tabs.appendChild(b);
+  });
+}
+function ownersOf(id){
+  return Object.keys(CAN_EDIT).filter(p=>CAN_EDIT[p].includes(id)).map(p=>NAMES[p]).join(" & ");
+}
+function render(){
+  document.body.dataset.list = cur;
+  const main=$("main"); const list=data[cur];
+  if(!list){ main.innerHTML='<div class="loading">Loading&hellip;</div>'; return; }
+  const editable = canEdit(cur);
+  const k = counts(cur);
+  const today = new Date().toLocaleDateString(undefined,{month:"short",day:"numeric",year:"numeric"});
+  let h = '<div id="printHead">'+esc(NAMES[cur])+' \u2014 Cruise Packing \u00b7 Carnival Celebration SJ63G1'
+    + '<small>'+k.done+' of '+k.tot+' packed \u00b7 printed '+esc(today)
+    + (profile? ' by '+esc(NAMES[profile]) : '')+'</small></div>';
+  if(!fbConfigured()) h += '<div class="banner setup">&#9881; Setup needed: paste your Firebase config into this file (see the comment at the top of the script) — nothing will sync until then.</div>';
+  if(!editable) h += '<div class="banner">&#128065; View only — '+esc(NAMES[cur])+"'s list is updated by "+ownersOf(cur)+'.</div>';
+  h += '<div class="progressWrap"><div class="progressBar" style="width:'+k.pct+'%"></div></div>';
+  list.cats.forEach((c,ci)=>{
+    const its = items(c);
+    const cd = its.filter(i=>i.c).length;
+    const col = collapsed[cur+"|"+c.n];
+    h += '<section class="cat"><div class="catHead" onclick="toggleCat('+ci+')">'
+      + '<h2>'+esc(c.n)+'</h2><span class="count">'+cd+' / '+its.length;
+    if(editable && its.length===0){
+      h += ' <button class="iconBtn del" title="Remove empty category" onclick="event.stopPropagation();delCat('+ci+')">&times;</button>';
+    }
+    h += ' <span class="chev">'+(col?"&#9656;":"&#9662;")+'</span></span></div>';
+    if(!col){
+      h += '<div class="items">';
+      its.forEach((it,ii)=>{
+        h += '<div class="item'+(it.c?" done":"")+'">'
+          + '<span class="pbox">'+(it.c?'\u2611':'\u2610')+'</span>'
+          + '<input type="checkbox" '+(it.c?"checked ":"")+(editable?"":"disabled ")
+          + 'onchange="toggleItem('+ci+','+ii+',this.checked)">'
+          + '<div class="txt">'+esc(it.n)
+          + (it.note?'<span class="note">&#9998; '+esc(it.note)+'</span>':'')
+          + (it._editNote?'<input class="noteInput" value="'+esc(it.note||"")+'" placeholder="Add a note" '
+              +'onkeydown="if(event.key===\'Enter\')this.blur()" onblur="saveNote('+ci+','+ii+',this.value)">':'')
+          + '</div>';
+        if(editable){
+          h += '<button class="iconBtn" title="Note" onclick="editNote('+ci+','+ii+')">&#9998;</button>'
+            +  '<button class="iconBtn del" title="Remove" onclick="delItem('+ci+','+ii+')">&times;</button>';
+        }
+        h += '</div>';
+      });
+      h += '</div>';
+      if(editable){
+        h += '<div class="addRow"><input id="add_'+ci+'" placeholder="Add an item to '+esc(c.n)+'" '
+          + 'onkeydown="if(event.key===\'Enter\')addItem('+ci+')">'
+          + '<button onclick="addItem('+ci+')">Add</button></div>';
+      }
+    }
+    h += '</section>';
+  });
+  if(editable){
+    h += '<div class="addCat"><input id="addCatName" placeholder="Add a category to this list (e.g. Souvenirs)" '
+      + 'onkeydown="if(event.key===\'Enter\')addCat()"><button onclick="addCat()">+ Category</button></div>';
+  }
+  main.innerHTML = h;
+  renderChrome();
+}
+
+/* ---------------- actions ---------------- */
+function toggleCat(ci){ const key=cur+"|"+data[cur].cats[ci].n; collapsed[key]=!collapsed[key]; render(); }
+function toggleItem(ci,ii,val){
+  if(!canEdit(cur)) return;
+  items(data[cur].cats[ci])[ii].c = val?1:0;
+  saveList(cur); render();
+}
+function addItem(ci){
+  if(!canEdit(cur)) return;
+  const inp=$("add_"+ci); const v=(inp.value||"").trim(); if(!v) return;
+  items(data[cur].cats[ci]).push({i:"c"+Date.now(), n:v, c:0, note:""});
+  inp.value="";
+  saveList(cur); render();
+  const again=$("add_"+ci); if(again) again.focus();
+}
+function delItem(ci,ii){
+  if(!canEdit(cur)) return;
+  const it=items(data[cur].cats[ci])[ii];
+  if(!it._armDel){ it._armDel=true; toast('Tap \u00d7 again to remove "'+it.n+'"');
+    setTimeout(()=>{delete it._armDel;},2500); return; }
+  items(data[cur].cats[ci]).splice(ii,1);
+  saveList(cur); render();
+}
+function addCat(){
+  if(!canEdit(cur)) return;
+  const inp=$("addCatName"); const v=(inp.value||"").trim(); if(!v) return;
+  if(data[cur].cats.some(c=>c.n.toLowerCase()===v.toLowerCase())){ toast("That category already exists"); return; }
+  data[cur].cats.push({n:v, items:[]});
+  saveList(cur); render(); toast('Category "'+v+'" added');
+}
+function delCat(ci){
+  if(!canEdit(cur)) return;
+  const c=data[cur].cats[ci];
+  if(items(c).length){ toast("Only empty categories can be removed"); return; }
+  if(!c._armDel){ c._armDel=true; toast('Tap \u00d7 again to remove "'+c.n+'"');
+    setTimeout(()=>{delete c._armDel;},2500); return; }
+  data[cur].cats.splice(ci,1);
+  saveList(cur); render();
+}
+function editNote(ci,ii){
+  const it=items(data[cur].cats[ci])[ii];
+  it._editNote = !it._editNote; render();
+  const inp=document.querySelector(".noteInput"); if(inp) inp.focus();
+}
+function saveNote(ci,ii,val){
+  const it=items(data[cur].cats[ci])[ii];
+  it.note=(val||"").trim(); delete it._editNote;
+  saveList(cur); render();
+}
+function printList(){
+  const keys=Object.keys(collapsed).filter(k=>k.startsWith(cur+"|")&&collapsed[k]);
+  keys.forEach(k=>collapsed[k]=false);
+  render();
+  const restore=()=>{ keys.forEach(k=>collapsed[k]=true); render(); window.onafterprint=null; };
+  window.onafterprint=restore;
+  setTimeout(()=>{ window.print(); setTimeout(restore,1500); }, 60);
+}
+function resetChecks(){
+  if(!canEdit(cur)){ toast("View-only list"); return; }
+  if(!resetArmed){ resetArmed=true; $("resetBtn").textContent="Tap again to confirm";
+    setTimeout(()=>{resetArmed=false; $("resetBtn").textContent="Reset checkmarks";},2500); return; }
+  resetArmed=false; $("resetBtn").textContent="Reset checkmarks";
+  data[cur].cats.forEach(c=>items(c).forEach(it=>it.c=0));
+  saveList(cur); render(); toast(NAMES[cur]+" checkmarks cleared");
+}
+
+/* ---------------- boot ---------------- */
+(async function(){
+  initProfile();
+  const ok = await initFirebase();
+  if(ok){
+    LISTS.forEach(watchList);
+  }else{
+    // no backend yet: show seeded lists locally so the page is still browsable
+    LISTS.forEach(id=>{ data[id]={cats:SEED[id], by:"", at:0}; });
+  }
+  if(profile) renderChrome();
+  render();
+})();
+</script>
+</body>
+</html>
