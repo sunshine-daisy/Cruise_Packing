@@ -197,7 +197,7 @@ let meta = null;
 function C(n, items){ return {n:n, items:items.map((t,i)=>({i:"s"+i+"_"+n.length, n:t, c:0, note:""}))}; }
 const SEED = {
 shared: [
- C("Documents & Money (group set)", ["Documents holder","Smart tags for passports","Carnival boarding passes (printed)","Excursion confirmations (Celebration Key rental)","Luggage tags & protectors","Hotel confirmations — Miami and Palm Beach","Printed flight confirmations — IND→MIA & PBI→IND","Travel insurance — Carnival Vacation Protection certificate","Enterprise confirmations — MIA & MIA→PBI","Cash for ports & tips — small USD bills","Copies of all passports (stored separately from originals)","Port agent phone numbers (each port)","Coin purse / coins","Printed copy of packing list & outfit planners","Sail & Sign lanyards / badge holders","Photos of all luggage","Birth-certificate copy + notarized consent letter (minor without both guardians)"]),
+ C("Documents & Money (group set)", ["Documents holder","Smart tags for passports","Carnival boarding passes (printed)","Excursion Confirmation Information","Luggage tags & protectors","Hotel confirmations — Miami and Palm Beach","Printed flight confirmations — IND→MIA & PBI→IND","Travel insurance — Carnival Vacation Protection certificate","Enterprise confirmations — MIA & MIA→PBI","Cash for ports & tips — small USD bills","Copies of all passports (stored separately from originals)","Port agent phone numbers (each port)","Coin purse / coins","Printed copy of packing list & outfit planners","Sail & Sign lanyards / badge holders","Photos of all luggage","Birth-certificate copy + notarized consent letter (minor without both guardians)"]),
  C("Medicines & First Aid Kit", ["Advil / ibuprofen","Tylenol","Dramamine or Bonine (motion sickness)","Nausea bands (3)","Motion sickness patches","Anti-diarrheal (Imodium)","Antacid (Tums / Pepcid)","Antihistamine (Benadryl / Zyrtec)","Hydrocortisone cream","Cold & flu basics (DayQuil, throat lozenges)","Thermometer","Band-aids + antibiotic cream","Blister band-aids","Reef-safe sunscreen SPF 50 (carry on)","Reef-safe sunscreen — spray (checked bag)","SPF lip balm (one per person)","Aloe vera after-sun gel","Insect repellent (ports)","Hand sanitizer (one per day bag)","Disinfectant / Clorox wipes","Electrolyte packets (Liquid IV — Caribbean heat)","Bug bite relief","Bug bite patches","Laxative","Masks","Back-pain cream","Blood pressure monitor","Blood sugar monitor","Alcohol spray","Vomit bags (a few for the cabin + one per day bag)"]),
  C("Cabin Setup & Organization", ["Magnetic hooks, heavy-duty (8–10)","Tacky putty","Magnets","Hanging closet / over-the-door organizer","Non-surge power strip / multi-port USB charger","Wet bags (3) — damp swimwear","Popup hamper","TSA locks for suitcases (flights/hotel — unlocked for porters)","Night light (motion-sensor)","Sticky notes + highlighters (Fun Times newsletter)","Portable safe / lock box","Sandwich / gallon ziplock bags","Room decor — door magnets, cutouts, etc.","Wrinkle-release spray (clothes irons prohibited)","Bathroom spray (odors)","Cabin alarm","Hangers","Laundry detergent pods (2–3) — hotel guest laundry; ship is valet-only","Flushable wipes (on ship: trash, never the toilet)"]),
  C("Beach & Shore Gear", ["Beach towel holders / towel bands (two types)","Waterproof phone pouches with lanyards (3)","Dry bag for wet excursions","Rain ponchos (9)","Snorkel sets + goggles","Packable daypack / beach bag (large)","Insulated reusable water bottles (3)","Cooling towels","Visors / sun hats bag","Beach games","Swimsuit pouches (wet bags)","Small first aid kit","Compact travel umbrella"]),
@@ -247,7 +247,7 @@ shore: [
  C("Shore-Day Bag (pack the night before each port)", ["Sail & Sign cards (everyone)","Government photo IDs (everyone — Grand Turk rule)","Excursion ticket / confirmation","Cash (small bills) + one credit card","Port agent phone number","Fun Times newsletter (back-onboard time!)","Phones","Waterproof pouches","Power bank","Reef-safe sunscreen","SPF lip balm","Itch relief","Small first aid kit","Sunglasses","Hats","Ship beach towels (swap onboard — don't pack your own)","Towel bands","Water bottles (filled)","Snacks","Snorkel gear / goggles (beach days)","Water shoes","Hand sanitizer + tissues + band-aids + Tylenol","Dry bag","Wet bags","Ponchos (rainy forecast days)","Camera + spare battery + memory card","Local map / port guide","Motion-sickness tablets (take BEFORE the Amber Cove catamaran)","Vomit bag (taxis; the catamaran)","Isa — knee sleeve + pain reliever"])
 ],
 home: [
- C("Before You Leave Home", ["Photo of all luggage + photo of cruise ID cards","Arm home alarm + call Frontpoint about vacation","Lamp / appliance timers set","Shut off water + unplug devices + lock doors & windows","Call T-Mobile — international / cruise plan","Bank run — small bills for ports & tips","Chico's boarding drop-off confirmed","Plant care arranged","AA online check-in — 24 hrs before Friday's flight (Jul 23)","Download HUB app + set up $5/person chat","USPS mail hold","Leave a copy of the itinerary with someone at home"])
+ C("Before You Leave Home", ["Photo of all luggage + photo of cruise ID cards","Arm home alarm + call Frontpoint about vacation","Lamp / appliance timers set","Shut off water + unplug devices + lock doors & windows","Call T-Mobile — international / cruise plan","Bank run — small bills for ports & tips","Chico's boarding drop-off confirmed","Plant care arranged","AA online check-in — 24 hrs before Friday's flight (Jul 23)","Download HUB app + set up $5/person chat","USPS mail hold","Leave a copy of the itinerary with someone at home","Print port maps / guides (4 ports)"])
 ]
 };
 
@@ -329,25 +329,30 @@ function watchMeta(){
 }
 /* one-time content migration (seedRev 2): items added Jul 2026 from the trip plan */
 const MIGRATIONS = [
-  {list:"shared", cat:"Medicines & First Aid Kit", items:["Vomit bags (a few for the cabin + one per day bag)"]},
-  {list:"shared", cat:"Documents & Money (group set)", items:["Birth-certificate copy + notarized consent letter (minor without both guardians)"]},
-  {list:"shore", cat:null, items:["Camera + spare battery + memory card","Local map / port guide","Motion-sickness tablets (take BEFORE the Amber Cove catamaran)","Vomit bag (taxis; the catamaran)"]},
-  {list:"home", cat:null, items:["AA online check-in \u2014 24 hrs before Friday's flight (Jul 23)","Download HUB app + set up $5/person chat","USPS mail hold","Leave a copy of the itinerary with someone at home"]},
-  {list:"lilian", cat:"Flight Carry-On (TSA 3-1-1)", items:["Jewelry & valuables \u2014 never in checked bags"]},
-  {list:"isa", cat:"Flight Carry-On (TSA 3-1-1)", items:["Jewelry & valuables \u2014 never in checked bags"]},
-  {list:"camila", cat:"Flight Carry-On (TSA 3-1-1)", items:["Jewelry & valuables \u2014 never in checked bags"]},
-  {list:"isa", cat:"CPAP (sleep gear)", createCat:true, beforeCat:"Electronics",
-   items:["CPAP machine + mask + hose (distilled water pre-paid \u2014 delivered to cabin)","CPAP power cord + extension cord"]}
+  {rev:2, list:"shared", cat:"Medicines & First Aid Kit", items:["Vomit bags (a few for the cabin + one per day bag)"]},
+  {rev:2, list:"shared", cat:"Documents & Money (group set)", items:["Birth-certificate copy + notarized consent letter (minor without both guardians)"]},
+  {rev:2, list:"shore", cat:null, items:["Camera + spare battery + memory card","Local map / port guide","Motion-sickness tablets (take BEFORE the Amber Cove catamaran)","Vomit bag (taxis; the catamaran)"]},
+  {rev:2, list:"home", cat:null, items:["AA online check-in \u2014 24 hrs before Friday's flight (Jul 23)","Download HUB app + set up $5/person chat","USPS mail hold","Leave a copy of the itinerary with someone at home"]},
+  {rev:2, list:"lilian", cat:"Flight Carry-On (TSA 3-1-1)", items:["Jewelry & valuables \u2014 never in checked bags"]},
+  {rev:2, list:"isa", cat:"Flight Carry-On (TSA 3-1-1)", items:["Jewelry & valuables \u2014 never in checked bags"]},
+  {rev:2, list:"camila", cat:"Flight Carry-On (TSA 3-1-1)", items:["Jewelry & valuables \u2014 never in checked bags"]},
+  {rev:2, list:"isa", cat:"CPAP (sleep gear)", createCat:true, beforeCat:"Electronics",
+   items:["CPAP machine + mask + hose (distilled water pre-paid \u2014 delivered to cabin)","CPAP power cord + extension cord"]},
+  {rev:3, list:"home", cat:null, items:["Print port maps / guides (4 ports)"]},
+  {rev:3, list:"shared", cat:"Documents & Money (group set)",
+   rename:{from:"Excursion confirmations (Celebration Key rental)", to:"Excursion Confirmation Information"}}
 ];
+const SEED_REV = 3;
 let migrationStarted = false;
 function applyMigrations(){
   if(migrationStarted || !db) return;
   migrationStarted = true;
-  db.ref("meta/seedRev").transaction(v=>{ if(!v || v<2) return 2; },
-    (err, committed)=>{ if(err || !committed) return; runMigrationWrites(); });
+  let prevRev = 0;
+  db.ref("meta/seedRev").transaction(v=>{ prevRev = v||0; if(!v || v<SEED_REV) return SEED_REV; },
+    (err, committed)=>{ if(err || !committed) return; runMigrationWrites(prevRev); });
 }
-function runMigrationWrites(){
-  MIGRATIONS.forEach(m=>{
+function runMigrationWrites(prevRev){
+  MIGRATIONS.filter(m=>(m.rev||2)>prevRev).forEach(m=>{
     db.ref("packing/"+m.list).transaction(cur=>{
       if(!cur) return;                        // list not seeded yet — fresh seeds already include these
       cur.cats = cur.cats || [];
@@ -359,7 +364,12 @@ function runMigrationWrites(){
         if(at>=0) cur.cats.splice(at,0,cat); else cur.cats.push(cat);
       }
       cat.items = cat.items || [];
-      m.items.forEach((n,j)=>{
+      if(m.rename){
+        const it = cat.items.find(x=>x && x.n===m.rename.from);
+        if(it) it.n = m.rename.to;
+        return cur;
+      }
+      (m.items||[]).forEach((n,j)=>{
         if(!cat.items.some(it=>it && it.n===n))
           cat.items.push({i:"mg2_"+m.list+"_"+j+"_"+cat.items.length, n:n, c:0, note:""});
       });
